@@ -7,10 +7,6 @@
   <title>Lab 9</title>
 
   <style>
-    button {
-      margin: 3px;
-    }
-
     input[type="number"] {
       width: 60px;
     }
@@ -55,18 +51,127 @@
     <button>Trigger a Global Error</button>
   </section>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "7a86ac3a1d304faeb08ca1fd3e3eee7c",
+      application: "lab9"
+    });
+
+    class CustomError extends Error {
+      constructor(message) {
+        super(message); 
+        this.name = "CustomError"; 
+        }
+    }
+
+    window.onerror = (message) => {
+      console.log("Rip. An error occured");
+      TrackJS.track('Testing TrackJS!');
+    };
+    
+    let groupNum = 0;
+
     let calculateBtn = document.querySelector('#calculate');
     calculateBtn.addEventListener('click', () => {
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+      // Try/Catch Error -- catches an invalid operator input
+      try{
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch {
+        output.innerHTML = 'NaN';
+        throw new CustomError("Invalid input for operators!!");
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
     // TODO - Make buttons functional
+
+    // Console Log Demo
+    errorBtns[0].addEventListener("click", () =>{
+      console.log("Console Log Demo");
+    });
+
+    // Console Error Demo
+    errorBtns[1].addEventListener("click", () =>{
+      console.error("Console Error Demo");
+    });
+
+    // Console Dir
+    errorBtns[2].addEventListener("click", () =>{
+      console.dir(document);
+    });
+
+    // Console dirxml
+    errorBtns[3].addEventListener("click", () => {
+      console.dirxml(document);
+    });
+
+    // Console Group Start
+    errorBtns[4].addEventListener("click", () => {
+      console.group(`Group ${groupNum}`);
+      groupNum++;
+    });
+
+    // Console Group End
+    errorBtns[5].addEventListener("click", () => {
+      console.groupEnd(`Group ${groupNum}`);
+      groupNum--;
+    });
+
+    // Console Table
+    errorBtns[6].addEventListener("click", () => {
+      const objArray = [
+        {
+          name: "First Person",
+          birthdate: "1/1/1",
+          email: "First@here.cs"
+        },
+        {
+          name: "Second Person",
+          birthdate: "2/2/2",
+          email: "Second@here.cs"
+        },
+        {
+          name: "Third Person",
+          birthdate: "3/3/3",
+          email: "Third@here.cs"
+        }
+      ];
+      console.table(objArray);
+    });
+
+    // Console Time Begin
+    errorBtns[7].addEventListener("click", () => {
+      console.time();
+    });
+
+    // Console Time End
+    errorBtns[8].addEventListener("click", () => {
+      console.timeEnd();
+    });
+
+    // Console Trace
+    errorBtns[9].addEventListener("click", () => {
+      const galaxy = () => { solarSystem(); };
+      const solarSystem = () => { earth(); };
+      const earth = () => { usa(); };
+      const usa = () => { california(); };
+      const california = () => { ucsd(); };
+      const ucsd = () => { console.trace(); };
+      galaxy();
+    });
+
+    // Global Error
+    errorBtns[10].addEventListener("click", () => {
+      kaBoom;
+    });
+
   </script>
+  
 </body>
 </html>
